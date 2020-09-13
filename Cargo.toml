@@ -1,0 +1,25 @@
+[package]
+name = "cdr-today"
+version = "0.0.1"
+authors = ["clearloop <udtrokia@gmail.com>"]
+edition = "2018"
+description = "The server of cdr.today"
+repository = "https://github.com/cdr-today/st"
+license = "MIT"
+documentation = "https://docs.rs/st"
+homepage = "https://github.com/cdr-today/st"
+include = ["src/**/*", "Cargo.toml", "./README.md"]
+keywords = ["service"]
+readme = './README.md'
+
+
+[[bin]]
+name = "ct"
+path = "src/bin/ct.rs"
+
+[dependencies]
+actix-web = "3"
+actix-service = "1.0.6"
+env_logger = "0.7.1"
+futures = "0.3.5"
+structopt = "0.3.17"
