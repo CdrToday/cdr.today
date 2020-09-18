@@ -12,5 +12,6 @@ pub mod api;
 pub mod cmd;
 mod derive;
 mod err;
+mod middleware;
 
 pub use self::err::Error;
