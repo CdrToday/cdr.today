@@ -1,5 +1,5 @@
 //! ST Commands
-use crate::err::Error;
+use crate::result::Error;
 use structopt::StructOpt;
 
 mod run;

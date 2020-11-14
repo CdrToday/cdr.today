@@ -1,4 +1,4 @@
-//! # cdr-today
+//! # cdr.today
 //!
 //! ![API](https://github.com/cdr-today/cdr-today/workflows/API/badge.svg)
 //! [![crate](https://img.shields.io/crates/v/cdr-today.svg)](https://crates.io/crates/cdr-today)
@@ -11,7 +11,6 @@
 pub mod api;
 pub mod cmd;
 mod derive;
-mod err;
 mod middleware;
-
-pub use self::err::Error;
+mod primitive;
+mod result;
