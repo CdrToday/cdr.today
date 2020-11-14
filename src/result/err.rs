@@ -1,7 +1,8 @@
+use actix_web::Error as ActixWeb;
 use std::{
     error::Error as ErrorTrait,
     fmt::{Display, Formatter, Result as FmtResult},
-    io::Error as IoError,
+    io::Error as Io,
 };
 
 macro_rules! error {
@@ -33,4 +34,4 @@ macro_rules! error {
     };
 }
 
-error!(IoError);
+error!(ActixWeb, Io);

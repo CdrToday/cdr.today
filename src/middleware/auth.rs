@@ -11,6 +11,7 @@ use futures::Future;
 // 1. Middleware initialization, middleware factory gets called with
 //    next service in chain as parameter.
 // 2. Middleware's call method gets called with normal request.
+#[derive(Default)]
 pub struct Auth;
 
 // Middleware factory is `Transform` trait from actix-service crate
