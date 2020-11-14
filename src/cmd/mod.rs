@@ -5,23 +5,40 @@ use structopt::StructOpt;
 mod run;
 
 #[derive(StructOpt)]
+struct Opt {
+    /// Verbose mode
+    #[structopt(long, short)]
+    verbose: bool,
+    /// SubCommands of binary `ct`
+    #[structopt(subcommand)] // Note that we mark a field as a subcommand
+    command: Command,
+}
+
+#[derive(StructOpt)]
 /// The server of cdr.today
-enum Opt {
+enum Command {
     /// Run api server
     Run {
         /// Http server Port
         #[structopt(long, short, default_value = "1439")]
         port: u16,
-        /// Verbose mode
-        #[structopt(long, short)]
-        verbose: bool,
     },
 }
 
 /// Exec st commands
 pub async fn exec() -> Result<(), Error> {
-    match Opt::from_args() {
-        Opt::Run { port, verbose } => run::exec(port, verbose).await,
+    let opt = Opt::from_args();
+    if std::env::var("RUST_LOG").is_err() {
+        if opt.verbose {
+            std::env::set_var("RUST_LOG", "info,ct");
+        } else {
+            std::env::set_var("RUST_LOG", "info");
+        }
+    }
+    env_logger::init();
+
+    match opt.command {
+        Command::Run { port } => run::exec(port).await,
     }?;
 
     Ok(())
