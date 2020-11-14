@@ -1,4 +1,6 @@
-use actix_web::{web, Error, HttpResponse};
+//! cdr.today GraphQL APIs
+use crate::result::HttpResult;
+use actix_web::{web, HttpResponse};
 use juniper::{
     tests::fixtures::starwars::schema::{Database, Query},
     EmptyMutation, EmptySubscription, RootNode,
@@ -20,12 +22,12 @@ pub fn schema() -> Schema {
 pub type Schema = RootNode<'static, Query, EmptyMutation<Database>, EmptySubscription<Database>>;
 
 /// GraphQL APIs
-pub async fn graphiql_handler() -> Result<HttpResponse, Error> {
+pub async fn graphiql_handler() -> HttpResult<HttpResponse> {
     gqli_handler("/", None).await
 }
 
 /// GraphQL playground
-pub async fn playground_handler() -> Result<HttpResponse, Error> {
+pub async fn playground_handler() -> HttpResult<HttpResponse> {
     play_handler("/", None).await
 }
 
@@ -34,7 +36,7 @@ pub async fn graphql(
     req: actix_web::HttpRequest,
     payload: actix_web::web::Payload,
     schema: web::Data<Schema>,
-) -> Result<HttpResponse, Error> {
+) -> HttpResult<HttpResponse> {
     let context = Database::new();
     graphql_handler(&schema, &context, req, payload).await
 }

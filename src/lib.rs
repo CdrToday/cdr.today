@@ -8,9 +8,9 @@
 //!
 //! The server of cdr.today
 #![deny(missing_docs)]
-pub mod api;
 pub mod cmd;
 mod derive;
+pub mod graphql;
 mod middleware;
 mod primitive;
 mod result;

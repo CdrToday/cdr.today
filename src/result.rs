@@ -1,4 +1,7 @@
+//! Cdr.today Result
+
 use actix_web::Error as ActixWeb;
+use std::result::Result as StdResult;
 use std::{
     error::Error as ErrorTrait,
     fmt::{Display, Formatter, Result as FmtResult},
@@ -34,4 +37,10 @@ macro_rules! error {
     };
 }
 
-error!(ActixWeb, Io);
+error!(Io);
+
+/// Cdr.Today Result
+pub type Result<T> = StdResult<T, Error>;
+
+/// ActixWeb Result
+pub type HttpResult<T> = StdResult<T, ActixWeb>;
