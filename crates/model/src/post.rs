@@ -2,12 +2,9 @@
 use crate::{Instance, Model};
 
 /// Post Model
-pub trait Post<E, K>: Model<E, K>
-where
-    K: Default,
-{
+pub trait Post<E>: Model<E> {
     /// Title of the post
-    fn title<'n, N>(&self) -> Result<Option<N>, <Self as Model<E, K>>::Error>
+    fn title<'n, N>(&self) -> Result<Option<N>, <Self as Model<E>>::Error>
     where
         N: Instance<'n>,
     {
@@ -15,7 +12,7 @@ where
     }
 
     /// Context of the post
-    fn context<'n, N>(&self) -> Result<Option<N>, <Self as Model<E, K>>::Error>
+    fn context<'n, N>(&self) -> Result<Option<N>, <Self as Model<E>>::Error>
     where
         N: Instance<'n>,
     {

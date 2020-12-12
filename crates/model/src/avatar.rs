@@ -2,12 +2,9 @@
 use crate::{Instance, Model};
 
 /// Account Model
-pub trait Avatar<E, K>: Model<E, K>
-where
-    K: Default,
-{
+pub trait Avatar<E>: Model<E> {
     /// Name of the account
-    fn name<'n, N>(&self) -> Result<Option<N>, <Self as Model<E, K>>::Error>
+    fn name<'n, N>(&self) -> Result<Option<N>, <Self as Model<E>>::Error>
     where
         N: Instance<'n>,
     {
@@ -15,7 +12,7 @@ where
     }
 
     /// Avator of the account
-    fn avator<'a, A>(&self) -> Result<Option<A>, <Self as Model<E, K>>::Error>
+    fn avator<'a, A>(&self) -> Result<Option<A>, <Self as Model<E>>::Error>
     where
         A: Instance<'a>,
     {
