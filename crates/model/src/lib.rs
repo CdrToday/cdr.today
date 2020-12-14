@@ -11,7 +11,9 @@ mod post;
 pub use self::{avatar::Avatar, community::Communiy, member::Member, post::Post};
 
 /// Storage Instance
-pub trait Instance<'i>: From<&'i [u8]> + Sized {
+pub trait Instance<'i>: From<&'i [u8]> + Into<Vec<u8>> + Sized {
+    /// The key of this instance
+    const KEY: &'i [u8];
     /// Which model this instance belongs to
     const MODEL: &'i [u8];
 }
@@ -21,20 +23,11 @@ pub trait InstanceVector<'i, T>: Instance<'i>
 where
     T: Instance<'i>,
 {
-    /// Which model this vector belongs to
-    const MODEL: &'i [u8];
-
     /// Push element
     fn push(&mut self, element: &T);
 
     /// Remove element
     fn remove(&mut self, element: &T);
-
-    /// To vector
-    fn to_vec(&self) -> Vec<T>;
-
-    /// From vector
-    fn from_vec(v: Vec<T>) -> Self;
 }
 
 /// This trait abstrats the storage of ct models
@@ -64,7 +57,7 @@ pub trait Model<E>: AsRef<[u8]> + Sized {
     type Key: Default + AsRef<[u8]>;
 
     /// The name space of the model
-    const SPACE: Vec<u8>;
+    const SPACE: &'static [u8];
 
     /// The key of the instance, maybe a hash
     fn key<'k>(&self) -> Result<Self::Key, Self::Error>;

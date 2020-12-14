@@ -12,10 +12,9 @@ include = ["src/**/*", "Cargo.toml", "./README.md"]
 keywords = ["service"]
 readme = './README.md'
 
-
-[[bin]]
-name = "ct"
-path = "src/bin/ct.rs"
+# [[bin]]
+# name = "ct"
+# path = "src/bin/ct.rs"
 
 [dependencies]
 # actix-web = "3"
