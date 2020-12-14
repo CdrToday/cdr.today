@@ -11,18 +11,15 @@ mod post;
 pub use self::{avatar::Avatar, community::Communiy, member::Member, post::Post};
 
 /// Storage Instance
-pub trait Instance<'i>: From<&'i [u8]> + Into<Vec<u8>> + Sized {
+pub trait Instance: AsRef<[u8]> + Sized {
     /// The key of this instance
-    const KEY: &'i [u8];
+    const KEY: &'static [u8];
     /// Which model this instance belongs to
-    const MODEL: &'i [u8];
+    const MODEL: &'static [u8];
 }
 
 /// Field Vector Instance, which can push and remove elements
-pub trait InstanceVector<'i, T>: Instance<'i>
-where
-    T: Instance<'i>,
-{
+pub trait InstanceVector<T>: Instance {
     /// Push element
     fn push(&mut self, element: &T);
 
@@ -40,7 +37,7 @@ pub trait Engine {
     /// Get storage
     fn get<'e, T>(key: impl AsRef<[u8]>) -> Result<T, Self::Error>
     where
-        T: From<&'e [u8]>;
+        T: From<&'e [u8]> + Model<Self::Error>;
 
     /// Batch model instances
     fn batch<M>(&self, limit: Option<usize>) -> Result<Vec<M>, Self::Error>
@@ -54,18 +51,18 @@ pub trait Model<E>: AsRef<[u8]> + Sized {
     type Error: Into<E>;
 
     /// Storage Key
-    type Key: Default + AsRef<[u8]>;
+    type Key: Default + AsRef<[u8]> + Sized;
 
     /// The name space of the model
     const SPACE: &'static [u8];
 
     /// The key of the instance, maybe a hash
-    fn key<'k>(&self) -> Result<Self::Key, Self::Error>;
+    fn key(&self) -> Result<Self::Key, Self::Error>;
 
     /// Flatten fields
-    fn flatten<'f, F>(&self) -> Result<Option<F>, Self::Error>
+    fn flatten<F>(&self) -> Result<Option<F>, Self::Error>
     where
-        F: Instance<'f>,
+        F: Instance,
     {
         Ok(None)
     }
