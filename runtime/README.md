@@ -2,4 +2,4 @@
 
 The runtime of cdr.today
 
-This crate gathers the modules of cdr.today.
+This crate gathers the modules of cdr.today, actually the config layer.
