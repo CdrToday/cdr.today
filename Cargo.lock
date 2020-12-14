@@ -7,6 +7,9 @@ version = "0.0.1"
 [[package]]
 name = "ct-model"
 version = "0.1.0"
+dependencies = [
+ "ct-primitive",
+]
 
 [[package]]
 name = "ct-primitive"
