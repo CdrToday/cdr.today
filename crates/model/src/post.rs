@@ -3,19 +3,16 @@ use crate::{Instance, Model};
 
 /// Post Model
 pub trait Post<E>: Model<E> {
+    type Title: Instance;
+    type Context: Instance;
+
     /// Title of the post
-    fn title<N>(&self) -> Result<Option<N>, <Self as Model<E>>::Error>
-    where
-        N: Instance,
-    {
+    fn title(&self) -> Result<Option<Self::Title>, <Self as Model<E>>::Error> {
         Ok(None)
     }
 
     /// Context of the post
-    fn context<N>(&self) -> Result<Option<N>, <Self as Model<E>>::Error>
-    where
-        N: Instance,
-    {
+    fn context(&self) -> Result<Option<Self::Context>, <Self as Model<E>>::Error> {
         Ok(None)
     }
 }

@@ -4,6 +4,7 @@ use ct_primitive::PublicKey;
 
 /// Account Model
 pub trait Avatar<E>: Model<E> + PublicKey {
+    type Avatar: Instance;
     type Name: Instance;
 
     /// Name of the account
@@ -12,18 +13,12 @@ pub trait Avatar<E>: Model<E> + PublicKey {
     }
 
     /// Name of the account
-    fn name<N>(&self) -> Result<Option<N>, <Self as Model<E>>::Error>
-    where
-        N: Instance,
-    {
+    fn name(&self) -> Result<Option<Self::Name>, <Self as Model<E>>::Error> {
         Ok(None)
     }
 
     /// Avator of the account
-    fn avator<A>(&self) -> Result<Option<A>, <Self as Model<E>>::Error>
-    where
-        A: Instance,
-    {
+    fn avator(&self) -> Result<Option<Self::Avatar>, <Self as Model<E>>::Error> {
         Ok(None)
     }
 }

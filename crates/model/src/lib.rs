@@ -51,7 +51,7 @@ pub trait Model<E>: AsRef<[u8]> + Sized {
     type Error: Into<E>;
 
     /// Storage Key
-    type Key: Default + AsRef<[u8]>;
+    type Key: Default + AsRef<[u8]> + Sized;
 
     /// The name space of the model
     const SPACE: &'static [u8];
