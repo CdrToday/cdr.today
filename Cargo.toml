@@ -1,6 +1,8 @@
 [workspace]
 members = [
+  "cli",
   "model",
   "primitive",
-  "cli",
+  "runtime",
+  "service",
 ]
