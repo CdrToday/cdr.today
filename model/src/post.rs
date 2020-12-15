@@ -1,18 +1,18 @@
 //! Post
-use crate::{Instance, Model};
+use crate::{Engine, Instance, Model};
 
 /// Post Model
-pub trait Post<E>: Model<E> {
+pub trait Post: Model {
     type Title: Instance;
     type Context: Instance;
 
     /// Title of the post
-    fn title(&self) -> Result<Option<Self::Title>, <Self as Model<E>>::Error> {
+    fn title(&self) -> Result<Option<Self::Title>, <Self as Engine>::Error> {
         Ok(None)
     }
 
     /// Context of the post
-    fn context(&self) -> Result<Option<Self::Context>, <Self as Model<E>>::Error> {
+    fn context(&self) -> Result<Option<Self::Context>, <Self as Engine>::Error> {
         Ok(None)
     }
 }

@@ -8,7 +8,7 @@ pub trait PublicKey {
     type Raw: AsRef<[u8]> + Sized;
 
     /// The raw bytes of the public key
-    type Signature: AsRef<[u8]> + Sized;
+    type Signature: AsRef<[u8]> + Sized + Eq + PartialEq;
 
     /// Verify a signature
     fn verify(&self, signature: dyn AsRef<Self::Signature>) -> bool;

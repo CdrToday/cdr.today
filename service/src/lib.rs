@@ -1,7 +1,13 @@
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
+//! cdr-today-service
+#![no_std]
+#![deny(missing_docs)]
+mod auth;
+
+/// This service trait abstracts the common service ct provies
+pub trait Service {
+    /// Service Name
+    const NAME: dyn AsRef<[u8]>;
+
+    /// Service Error
+    type Error;
 }

@@ -37,19 +37,16 @@ pub trait Engine {
     /// Get storage
     fn get<'e, T>(key: impl AsRef<[u8]>) -> Result<T, Self::Error>
     where
-        T: From<&'e [u8]> + Model<Self::Error>;
+        T: From<&'e [u8]> + Model;
 
     /// Batch model instances
     fn batch<M>(&self, limit: Option<usize>) -> Result<Vec<M>, Self::Error>
     where
-        M: Model<Self::Error>;
+        M: Model;
 }
 
 /// The Model
-pub trait Model<E>: AsRef<[u8]> + Sized {
-    /// Model Error
-    type Error: Into<E>;
-
+pub trait Model: AsRef<[u8]> + Sized + Engine {
     /// Storage Key
     type Key: Default + AsRef<[u8]> + Sized;
 
@@ -57,10 +54,10 @@ pub trait Model<E>: AsRef<[u8]> + Sized {
     const SPACE: &'static [u8];
 
     /// The key of the instance, maybe a hash
-    fn key(&self) -> Result<Self::Key, Self::Error>;
+    fn key(&self) -> Result<Self::Key, <Self as Engine>::Error>;
 
     /// Flatten fields
-    fn flatten<F>(&self) -> Result<Option<F>, Self::Error>
+    fn flatten<F>(&self) -> Result<Option<F>, <Self as Engine>::Error>
     where
         F: Instance,
     {
