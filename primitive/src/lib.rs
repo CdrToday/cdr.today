@@ -3,5 +3,6 @@
 #![no_std]
 mod hash;
 mod key;
+mod storage;
 
-pub use self::{hash::Hash, key::PublicKey};
+pub use self::{hash::Hash, key::PublicKey, storage::Storage};

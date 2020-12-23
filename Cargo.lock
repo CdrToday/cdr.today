@@ -20,13 +20,18 @@ name = "ct-primitive"
 version = "0.1.0"
 
 [[package]]
-name = "runtime"
-version = "0.1.0"
-
-[[package]]
-name = "service"
+name = "ct-service"
 version = "0.1.0"
 dependencies = [
  "ct-model",
  "ct-primitive",
+]
+
+[[package]]
+name = "runtime"
+version = "0.1.0"
+dependencies = [
+ "ct-model",
+ "ct-primitive",
+ "ct-service",
 ]

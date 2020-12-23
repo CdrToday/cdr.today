@@ -1,5 +1,5 @@
 //! Post
-use crate::{Engine, Instance, Model};
+use crate::{Instance, Model, Storage};
 
 /// Post Model
 pub trait Post: Model {
@@ -7,12 +7,12 @@ pub trait Post: Model {
     type Context: Instance;
 
     /// Title of the post
-    fn title(&self) -> Result<Option<Self::Title>, <Self as Engine>::Error> {
+    fn title(&self) -> Result<Option<Self::Title>, <Self as Storage>::Error> {
         Ok(None)
     }
 
     /// Context of the post
-    fn context(&self) -> Result<Option<Self::Context>, <Self as Engine>::Error> {
+    fn context(&self) -> Result<Option<Self::Context>, <Self as Storage>::Error> {
         Ok(None)
     }
 }

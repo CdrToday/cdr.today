@@ -1,7 +1,6 @@
 //! cdr today models
-#![no_std]
+#![cfg_attr(not(feature = "std"), no_std)]
 extern crate alloc;
-use alloc::vec::Vec;
 
 mod avatar;
 mod community;
@@ -9,6 +8,7 @@ mod member;
 mod post;
 
 pub use self::{avatar::Avatar, community::Communiy, member::Member, post::Post};
+use ct_primitive::Storage;
 
 /// Storage Instance
 pub trait Instance: AsRef<[u8]> + Sized {
@@ -27,26 +27,8 @@ pub trait InstanceVector<T>: Instance {
     fn remove(&mut self, element: &T);
 }
 
-/// This trait abstrats the storage of ct models
-pub trait Engine {
-    type Error;
-
-    /// Set storage
-    fn set(key: impl AsRef<[u8]>, value: impl AsRef<[u8]>) -> Result<(), Self::Error>;
-
-    /// Get storage
-    fn get<'e, T>(key: impl AsRef<[u8]>) -> Result<T, Self::Error>
-    where
-        T: From<&'e [u8]> + Model;
-
-    /// Batch model instances
-    fn batch<M>(&self, limit: Option<usize>) -> Result<Vec<M>, Self::Error>
-    where
-        M: Model;
-}
-
 /// The Model
-pub trait Model: AsRef<[u8]> + Sized + Engine {
+pub trait Model: AsRef<[u8]> + Sized + Storage {
     /// Storage Key
     type Key: Default + AsRef<[u8]> + Sized;
 
@@ -54,10 +36,10 @@ pub trait Model: AsRef<[u8]> + Sized + Engine {
     const SPACE: &'static [u8];
 
     /// The key of the instance, maybe a hash
-    fn key(&self) -> Result<Self::Key, <Self as Engine>::Error>;
+    fn key(&self) -> Result<Self::Key, <Self as Storage>::Error>;
 
     /// Flatten fields
-    fn flatten<F>(&self) -> Result<Option<F>, <Self as Engine>::Error>
+    fn flatten<F>(&self) -> Result<Option<F>, <Self as Storage>::Error>
     where
         F: Instance,
     {
