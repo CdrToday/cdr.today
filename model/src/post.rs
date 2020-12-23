@@ -3,7 +3,9 @@ use crate::{Instance, Model, Storage};
 
 /// Post Model
 pub trait Post: Model {
+    /// Post title
     type Title: Instance;
+    /// Post context
     type Context: Instance;
 
     /// Title of the post

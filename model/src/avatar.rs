@@ -4,7 +4,9 @@ use ct_primitive::PublicKey;
 
 /// Account Model
 pub trait Avatar: Model + PublicKey {
+    /// Maybe the link of avarar
     type Avatar: Instance;
+    /// Avatar name
     type Name: Instance;
 
     /// Name of the account

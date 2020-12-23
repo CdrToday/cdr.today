@@ -1,6 +1,6 @@
 //! cdr-today-service
-#![no_std]
 #![deny(missing_docs)]
+#![cfg_attr(not(feature = "std"), no_std)]
 mod auth;
 
 /// This service trait abstracts the common service ct provies
