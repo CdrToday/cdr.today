@@ -9,6 +9,7 @@ mod member;
 mod post;
 
 pub use self::{avatar::Avatar, community::Communiy, member::Member, post::Post};
+use core::iter::Iterator;
 use ct_primitive::Storage;
 
 /// Storage Instance
@@ -20,7 +21,7 @@ pub trait Instance: AsRef<[u8]> + Sized {
 }
 
 /// Field Vector Instance, which can push and remove elements
-pub trait InstanceVector<T>: Instance {
+pub trait InstanceVector<T>: Instance + Iterator {
     /// Push element
     fn push(&mut self, element: &T);
 
