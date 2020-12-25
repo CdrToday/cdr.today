@@ -1,5 +1,5 @@
 //! cdr.today practice
-pub mod ipc;
+// pub mod ipc;
 pub mod query;
 pub mod result;
 
@@ -11,7 +11,7 @@ pub struct Server;
 
 impl Server {
     /// Handle queries
-    pub fn handle(query: Query) -> Result<()> {
+    pub fn handle(&self, query: Query) -> Result<()> {
         if !query.is_valid() {
             Err(Error::InvalidQueryFormat)
         } else {
@@ -21,4 +21,10 @@ impl Server {
 }
 
 /// The template client
-pub struct Client {}
+pub struct Client;
+
+impl Client {
+    pub fn req(query: Query, server: &Server) -> Result<()> {
+        server.handle(query)
+    }
+}
