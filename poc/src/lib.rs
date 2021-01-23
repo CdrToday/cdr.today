@@ -5,6 +5,15 @@ mod cli;
 mod cmd;
 pub mod config;
 mod net;
-mod orm;
-pub mod result;
-mod scheme;
+pub mod orm;
+mod result;
+pub mod schema;
+
+#[macro_use]
+extern crate diesel;
+
+pub use self::{
+    cli::Opt,
+    config::Config,
+    result::{Error, Result},
+};
