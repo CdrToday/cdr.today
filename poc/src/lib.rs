@@ -6,7 +6,11 @@ mod cmd;
 pub mod config;
 mod net;
 mod orm;
-pub mod result;
+mod result;
 mod scheme;
 
-pub use self::cli::Opt;
+pub use self::{
+    cli::Opt,
+    config::Config,
+    result::{Error, Result},
+};
