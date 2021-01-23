@@ -1,5 +1,5 @@
 //! CLI
-use crate::{orm::Orm, result::Result, Config};
+use crate::{actix, result::Result, Config};
 use env_logger::{Builder, Env};
 use log::info;
 use structopt::StructOpt;
@@ -14,10 +14,9 @@ pub struct Opt {
 
 impl Opt {
     /// Execute the CLI
-    pub fn exec(&self) -> Result<()> {
+    pub async fn exec(&self) -> Result<()> {
         self.init_log()?;
-        let config = Config::default();
-        let _ = Orm::new(&config)?;
+        actix::serve(Config::default()).await?;
         Ok(())
     }
 

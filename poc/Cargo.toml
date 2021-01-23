@@ -19,7 +19,7 @@ diesel_migrations = "1.4.0"
 openssl = "0.10.32"
 
 # runtime
-actix-rt = "1.1.1"
+actix-cors = "0.5.4"
 
 # util
 etc = "0.1.16"

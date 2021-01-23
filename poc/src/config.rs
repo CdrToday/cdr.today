@@ -2,37 +2,36 @@
 use serde::{Deserialize, Serialize};
 
 /// cdr.today Config
-#[derive(Serialize, Deserialize, Default)]
-pub struct Config<'c> {
+#[derive(Clone, Default, Deserialize, Serialize)]
+pub struct Config {
     /// Postgres config
-    #[serde(borrow)]
-    pub pg: Pg<'c>,
+    pub pg: Pg,
 }
 
 /// Postgres config
-#[derive(Serialize, Deserialize)]
-pub struct Pg<'c> {
+#[derive(Clone, Deserialize, Serialize)]
+pub struct Pg {
     /// databse name
-    pub name: &'c str,
+    pub name: String,
     /// postgres addr
-    pub addr: &'c str,
+    pub addr: String,
     /// postgres port
     pub port: Option<u16>,
     /// If has username
-    pub user: Option<&'c str>,
+    pub user: Option<String>,
     /// If has password
-    pub secret: Option<&'c str>,
+    pub secret: Option<String>,
     /// If override the connection url of postgresql
-    pub r#override: Option<&'c str>,
+    pub r#override: Option<String>,
     /// Connection numbers
     pub conn: u8,
 }
 
-impl<'c> Default for Pg<'c> {
-    fn default() -> Pg<'c> {
+impl<'c> Default for Pg {
+    fn default() -> Pg {
         Pg {
-            name: "cdr_today",
-            addr: "localhost",
+            name: "cdr_today".into(),
+            addr: "localhost".into(),
             port: None,
             user: None,
             secret: None,
@@ -42,7 +41,7 @@ impl<'c> Default for Pg<'c> {
     }
 }
 
-impl<'c> Pg<'c> {
+impl Pg {
     /// PostgresQL url
     ///
     /// https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING
@@ -50,7 +49,7 @@ impl<'c> Pg<'c> {
         let mut url = String::from("postgresql://");
 
         // Username and password
-        match (self.user, self.secret) {
+        match (&self.user, &self.secret) {
             (Some(user), Some(secret)) => {
                 url.push_str(&format!("{}@{}", user, secret));
             }
@@ -61,7 +60,7 @@ impl<'c> Pg<'c> {
         }
 
         // Push addr
-        url.push_str(self.addr);
+        url.push_str(&self.addr);
 
         // Push port
         if let Some(port) = self.port {

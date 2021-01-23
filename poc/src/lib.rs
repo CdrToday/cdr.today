@@ -1,13 +1,13 @@
 //! cdr.today poc
 //!
 //! Quick version
+mod actix;
 mod cli;
-mod cmd;
 pub mod config;
-mod net;
 pub mod orm;
 mod result;
 pub mod schema;
+mod share;
 
 #[macro_use]
 extern crate diesel;

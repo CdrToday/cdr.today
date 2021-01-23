@@ -8,23 +8,11 @@ use diesel::{
 use log::{info, warn};
 use std::process::{Command, Stdio};
 
+/// Connection pool
+pub type ConnPool = Pool<ConnectionManager<PgConnection>>;
+
 /// CREATE TABLE Tempalte
 static CREATE_TABLE: &str = "CREATE TABLE IF NOT EXISTS ${TABLE_NAME} (${TABLE_CTX})";
-
-/// Table trait
-pub trait Table {
-    /// For example:
-    ///
-    /// ```rust
-    /// (
-    ///   "account", [
-    ///      "name TEXT NOT NULL",
-    ///      "address TEXT NOT NULL",
-    ///   ]
-    /// )
-    /// ```
-    fn table(&self) -> (&'static str, Vec<&'static str>);
-}
 
 /// Orm operation set
 pub struct Orm(Pool<ConnectionManager<PgConnection>>);
@@ -37,7 +25,7 @@ impl Orm {
         {
             warn!("Database {} doesn't exists, creating...", &config.pg.name);
             Command::new("createdb")
-                .arg(config.pg.name)
+                .arg(&config.pg.name)
                 .stdout(Stdio::null())
                 .status()?;
 
@@ -58,20 +46,19 @@ impl Orm {
     }
 
     /// Create tables
-    pub fn create_tables(&self, tables: Vec<Box<dyn Table>>) -> Result<()> {
-        for table in tables {
-            let t = table.table();
+    pub fn create_tables(self, tables: Vec<(&'static str, Vec<&'static str>)>) -> Result<Self> {
+        for t in tables {
             diesel::sql_query(CREATE_TABLE.replace("${TABLE_NAME}", t.0).replace(
                 "${TABLE_CTX}",
                 &format!("\n{}\n\n", t.1.join(",\n").trim_end_matches(",\n")),
             ))
             .execute(&self.0.get()?)?;
         }
-        Ok(())
+        Ok(self)
     }
 
     /// Give out the pool
-    pub fn pool(self) -> Pool<ConnectionManager<PgConnection>> {
+    pub fn pool(self) -> ConnPool {
         self.0
     }
 }

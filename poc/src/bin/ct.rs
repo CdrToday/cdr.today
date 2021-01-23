@@ -1,6 +1,7 @@
 use structopt::StructOpt;
 
-fn main() -> poc::Result<()> {
-    poc::Opt::from_args().exec()?;
+#[actix_web::main]
+async fn main() -> poc::Result<()> {
+    poc::Opt::from_args().exec().await?;
     Ok(())
 }

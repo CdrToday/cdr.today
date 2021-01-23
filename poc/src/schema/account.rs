@@ -1,26 +1,23 @@
 //! Account Schema
-use crate::Result;
+use super::{Schema, TableContext};
+use diesel::Queryable;
+use juniper::GraphQLObject;
 
 table! {
     accounts (addr) {
-        addr -> Binary,
+        addr -> Text,
     }
 }
 
 /// Account
+#[derive(GraphQLObject, Queryable)]
 pub struct Account {
-    addr: Vec<u8>,
+    /// Account address
+    pub addr: String,
 }
 
-impl Account {
-    /// account address
-    pub fn addr(&self) -> Result<[u8; 32]> {
-        if self.addr.len() != 32 {
-            Err("Invalid address".into())
-        } else {
-            let mut slice: [u8; 32] = Default::default();
-            slice.copy_from_slice(&self.addr);
-            Ok(slice)
-        }
+impl Schema for Account {
+    fn table() -> TableContext {
+        ("accounts", vec!["addr Text NOT NULL"])
     }
 }
