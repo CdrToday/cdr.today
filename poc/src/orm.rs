@@ -3,14 +3,17 @@ use crate::{Config, Result};
 use diesel::{
     pg::PgConnection,
     r2d2::{ConnectionManager, Pool},
+    RunQueryDsl,
 };
 use log::{info, warn};
 use std::process::{Command, Stdio};
 
+static CREATE_TABLE: &str = r#"
+CREATE TABLE IF NOT EXISTS ${TABLE_NAME} (${TABLE_CTX})
+"#;
+
 /// Orm operation set
-pub struct Orm {
-    pub pool: Pool<ConnectionManager<PgConnection>>,
-}
+pub struct Orm(Pool<ConnectionManager<PgConnection>>);
 
 impl Orm {
     // only support OSX for now
@@ -33,8 +36,33 @@ impl Orm {
     /// New orm set with connection
     pub fn new(config: &Config) -> Result<Self> {
         Self::create_db_if_not_exists(config)?;
-        Ok(Self {
-            pool: Pool::builder().build(ConnectionManager::<PgConnection>::new(config.pg.url()))?,
-        })
+        Ok(Self(Pool::builder().build(ConnectionManager::<
+            PgConnection,
+        >::new(
+            config.pg.url()
+        ))?))
+    }
+
+    /// Create tables
+    ///
+    /// For example:
+    ///
+    /// ```rust
+    /// (
+    ///   "account", [
+    ///      "name TEXT NOT NULL",
+    ///      "address TEXT NOT NULL",
+    ///   ]
+    /// )
+    /// ```
+    pub fn create_tables(&self, tables: Vec<(&'static str, Vec<&'static str>)>) -> Result<()> {
+        for t in tables {
+            diesel::sql_query(CREATE_TABLE.replace("${TABLE_NAME}", t.0).replace(
+                "${TABLE_CTX}",
+                &format!("\n{}\n\n", t.1.join(",\n").trim_end_matches(",\n")),
+            ))
+            .execute(&self.0.get()?)?;
+        }
+        Ok(())
     }
 }

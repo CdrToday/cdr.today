@@ -5,7 +5,7 @@ mod cli;
 mod cmd;
 pub mod config;
 mod net;
-mod orm;
+pub mod orm;
 mod result;
 mod scheme;
 
