@@ -8,3 +8,5 @@ mod net;
 mod orm;
 pub mod result;
 mod scheme;
+
+pub use self::cli::Opt;

@@ -18,10 +18,11 @@ diesel = { version = "1.4.5", features = [ "postgres" ] }
 # crypto
 openssl = "0.10.32"
 
-# encoding
-hex = "0.4.2"
+# runtime
+actix-rt = "1.1.1"
 
 # util
+log = "0.4.0"
 env_logger = "0.8.2"
 thiserror = "1.0.23"
 structopt = "0.3.21"
