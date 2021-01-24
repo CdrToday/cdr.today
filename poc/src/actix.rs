@@ -2,10 +2,12 @@
 use crate::{graphql, share::Shared, Config, Result};
 use actix_cors::Cors;
 use actix_web::{http::header, middleware, web, App, HttpServer};
+use std::sync::{Arc, Mutex};
 
 /// Serve actix App
 pub async fn serve(config: Config) -> Result<()> {
     let http_url = config.http.url();
+    let data = Arc::new(Mutex::new(Shared::new(config.clone())?));
     HttpServer::new(move || {
         App::new()
             .wrap(middleware::Logger::default())
@@ -19,7 +21,7 @@ pub async fn serve(config: Config) -> Result<()> {
                     .supports_credentials()
                     .max_age(3600),
             )
-            .data(Shared::new(config.clone()))
+            .data(data.clone())
             .service(
                 web::resource("/graphgl")
                     .route(web::post().to(graphql::graphql_route))

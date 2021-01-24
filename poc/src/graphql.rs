@@ -1,8 +1,9 @@
 //! GraphQL
 use crate::{orm::Orm, schema::Account, share::Shared};
-use actix_web::{web, Error, HttpResponse};
+use actix_web::{error::InternalError, http::StatusCode, web, Error, HttpResponse};
 use juniper::graphql_object;
 use juniper_actix::{graphiql_handler, graphql_handler, playground_handler};
+use std::sync::{Arc, Mutex};
 
 pub async fn graphiql_route() -> core::result::Result<HttpResponse, Error> {
     graphiql_handler("/graphgl", None).await
@@ -15,9 +16,13 @@ pub async fn playground_route() -> core::result::Result<HttpResponse, Error> {
 pub async fn graphql_route(
     req: actix_web::HttpRequest,
     payload: actix_web::web::Payload,
-    shared: web::Data<Shared>,
+    shared: web::Data<Arc<Mutex<Shared>>>,
 ) -> Result<HttpResponse, Error> {
-    graphql_handler(&shared.root_node, &shared.orm, req, payload).await
+    if let Ok(share) = shared.try_lock() {
+        graphql_handler(&share.root_node, &share.orm, req, payload).await
+    } else {
+        Err(InternalError::new("lock shared data failed", StatusCode::SERVICE_UNAVAILABLE).into())
+    }
 }
 
 /// GraphQL function set
