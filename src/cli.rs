@@ -1,5 +1,5 @@
 //! CLI
-use crate::{actix, result::Result, Config};
+use crate::{app, result::Result, Config};
 use env_logger::{Builder, Env};
 use log::info;
 use structopt::StructOpt;
@@ -16,7 +16,7 @@ impl Opt {
     /// Execute the CLI
     pub async fn exec(&self) -> Result<()> {
         self.init_log()?;
-        actix::serve(Config::default()).await?;
+        app::serve(Config::default()).await?;
         Ok(())
     }
 

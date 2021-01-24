@@ -1,4 +1,30 @@
-[workspace]
-members = [
-  "core",
-]
+[package]
+name = "poc"
+version = "0.1.0"
+authors = ["clearloop <udtrokia@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+# network
+juniper = "0.15.2"
+juniper_actix = "0.2.2"
+actix-web = "3.3.2"
+
+# database
+redis = "0.19.0"
+diesel = { version = "1.4.5", features = [ "postgres", "r2d2" ] }
+
+# crypto
+openssl = "0.10.32"
+
+# runtime
+actix-cors = "0.5.4"
+
+# util
+etc = "0.1.16"
+env_logger = "0.8.2"
+log = "0.4.0"
+thiserror = "1.0.23"
+structopt = "0.3.21"
+toml = "0.5.8"
+serde = { version = "1.0.120", features = ["derive"] }

@@ -1,8 +1,8 @@
 //! Shared data
 use crate::{
-    graphql::Query,
     orm::Orm,
     schema::{Account, Schema},
+    service::graphql::Query,
     Config, Result,
 };
 use juniper::{Context, EmptyMutation, EmptySubscription, RootNode};

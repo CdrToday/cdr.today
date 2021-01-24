@@ -1,19 +1,19 @@
-//! GraphQL
+//! GraphQL service
 use crate::{orm::Orm, schema::Account, share::Shared};
 use actix_web::{error::InternalError, http::StatusCode, web, Error, HttpResponse};
 use juniper::graphql_object;
 use juniper_actix::{graphiql_handler, graphql_handler, playground_handler};
 use std::sync::{Arc, Mutex};
 
-pub async fn graphiql_route() -> core::result::Result<HttpResponse, Error> {
+pub async fn graphiql() -> core::result::Result<HttpResponse, Error> {
     graphiql_handler("/graphgl", None).await
 }
 
-pub async fn playground_route() -> core::result::Result<HttpResponse, Error> {
+pub async fn playground() -> core::result::Result<HttpResponse, Error> {
     playground_handler("/graphgl", None).await
 }
 
-pub async fn graphql_route(
+pub async fn graphql(
     req: actix_web::HttpRequest,
     payload: actix_web::web::Payload,
     shared: web::Data<Arc<Mutex<Shared>>>,
