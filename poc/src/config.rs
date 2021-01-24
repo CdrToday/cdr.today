@@ -4,8 +4,32 @@ use serde::{Deserialize, Serialize};
 /// cdr.today Config
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct Config {
+    pub http: Http,
     /// Postgres config
     pub pg: Pg,
+}
+
+/// Http config
+#[derive(Clone, Deserialize, Serialize)]
+pub struct Http {
+    pub addr: String,
+    pub port: u16,
+}
+
+impl Default for Http {
+    fn default() -> Http {
+        Http {
+            addr: "0.0.0.0".into(),
+            port: 3000,
+        }
+    }
+}
+
+impl Http {
+    /// Convertw addr and port to url
+    pub fn url(&self) -> String {
+        format!("{}:{}", self.addr, self.port)
+    }
 }
 
 /// Postgres config

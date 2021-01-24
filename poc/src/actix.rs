@@ -10,6 +10,7 @@ async fn index(web::Path((id, name)): web::Path<(u32, String)>) -> impl Responde
 
 /// Serve actix App
 pub async fn serve(config: Config) -> Result<()> {
+    let http_url = config.http.url();
     HttpServer::new(move || {
         App::new()
             .data(Shared::new(config.clone()))
@@ -22,7 +23,7 @@ pub async fn serve(config: Config) -> Result<()> {
             )
             .service(index)
     })
-    .bind("127.0.0.1:3000")?
+    .bind(&http_url)?
     .run()
     .await?;
 
