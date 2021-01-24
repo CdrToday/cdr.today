@@ -61,6 +61,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "actix-cors"
+version = "0.5.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "36b133d8026a9f209a9aeeeacd028e7451bcca975f592881b305d37983f303d7"
+dependencies = [
+ "actix-web",
+ "derive_more",
+ "futures-util",
+ "log",
+ "once_cell",
+ "tinyvec",
+]
+
+[[package]]
 name = "actix-http"
 version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -573,10 +587,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "cli"
-version = "0.1.0"
-
-[[package]]
 name = "combine"
 version = "3.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -656,25 +666,6 @@ dependencies = [
  "autocfg",
  "cfg-if 0.1.10",
  "lazy_static",
-]
-
-[[package]]
-name = "ct-model"
-version = "0.1.0"
-dependencies = [
- "ct-primitive",
-]
-
-[[package]]
-name = "ct-primitive"
-version = "0.1.0"
-
-[[package]]
-name = "ct-service"
-version = "0.1.0"
-dependencies = [
- "ct-model",
- "ct-primitive",
 ]
 
 [[package]]
@@ -1552,7 +1543,7 @@ checksum = "3831453b3449ceb48b6d9c7ad7c96d5ea673e9b470a1dc578c2ce6521230884c"
 name = "poc"
 version = "0.1.0"
 dependencies = [
- "actix-rt",
+ "actix-cors",
  "actix-web",
  "diesel",
  "diesel_migrations",
@@ -1743,15 +1734,6 @@ checksum = "52e44394d2086d010551b14b53b1f24e31647570cd1deb0379e2c21b329aba00"
 dependencies = [
  "hostname",
  "quick-error",
-]
-
-[[package]]
-name = "runtime"
-version = "0.1.0"
-dependencies = [
- "ct-model",
- "ct-primitive",
- "ct-service",
 ]
 
 [[package]]

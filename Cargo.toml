@@ -1,9 +1,4 @@
 [workspace]
 members = [
-  "poc",
-  "cli",
-  "runtime",
-  "model",
-  "primitive",
-  "service",
+  "core",
 ]
