@@ -11,13 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      # - name: Cache Crates
-      #   uses: actions/cache@v2
-      #   env:
-      #     cache-name: elvis-cache
-      #   with:
-      #     path: ./target
-      #     key: ${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+      - name: Cache Crates
+        uses: actions/cache@v2
+        env:
+          cache-name: elvis-cache
+        with:
+          path: ./target
+          key: ${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
       - name: Build
         run: cargo build --all --all-features --verbose
       - name: Run tests
