@@ -25,7 +25,7 @@ impl Shared {
     pub fn new(config: Config) -> Result<Shared> {
         Ok(Shared {
             orm: Orm::new(&config)?.create_tables(Self::gather_tables())?,
-            config: config,
+            config,
             root_node: RootNode::new(Query, EmptyMutation::new(), EmptySubscription::new()),
         })
     }
