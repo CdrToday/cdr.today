@@ -2,7 +2,7 @@
 use crate::{Config, Result};
 use diesel::{
     pg::PgConnection,
-    r2d2::{ConnectionManager, Pool},
+    r2d2::{ConnectionManager, Pool, PooledConnection},
     RunQueryDsl,
 };
 use log::{info, warn};
@@ -10,6 +10,9 @@ use std::process::{Command, Stdio};
 
 /// Connection pool
 pub type ConnPool = Pool<ConnectionManager<PgConnection>>;
+
+/// Pooled connection
+pub type PooledConn = PooledConnection<ConnectionManager<PgConnection>>;
 
 /// CREATE TABLE Tempalte
 static CREATE_TABLE: &str = "CREATE TABLE IF NOT EXISTS ${TABLE_NAME} (${TABLE_CTX})";
@@ -58,7 +61,7 @@ impl Orm {
     }
 
     /// Give out the pool
-    pub fn pool(self) -> ConnPool {
-        self.0
+    pub fn conn(&self) -> Result<PooledConn> {
+        Ok(self.0.get()?)
     }
 }

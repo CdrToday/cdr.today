@@ -1,15 +1,20 @@
 //! Shared data
 use crate::{
-    orm::{ConnPool, Orm},
+    graphql::Query,
+    orm::Orm,
     schema::{Account, Schema},
     Config, Result,
 };
+use juniper::{Context, EmptyMutation, EmptySubscription, RootNode};
 
 /// Shared data
 pub struct Shared {
-    pub pool: ConnPool,
+    pub orm: Orm,
     pub config: Config,
+    pub root_node: RootNode<'static, Query, EmptyMutation<Orm>, EmptySubscription<Orm>>,
 }
+
+impl Context for Shared {}
 
 impl Shared {
     fn gather_tables() -> Vec<(&'static str, Vec<&'static str>)> {
@@ -19,10 +24,9 @@ impl Shared {
     /// New shared data
     pub fn new(config: Config) -> Result<Shared> {
         Ok(Shared {
-            pool: Orm::new(&config)?
-                .create_tables(Self::gather_tables())?
-                .pool(),
+            orm: Orm::new(&config)?.create_tables(Self::gather_tables())?,
             config: config,
+            root_node: RootNode::new(Query, EmptyMutation::new(), EmptySubscription::new()),
         })
     }
 }

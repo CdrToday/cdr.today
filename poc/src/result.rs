@@ -12,6 +12,8 @@ pub enum Error {
     R2d2(#[from] diesel::r2d2::PoolError),
     #[error(transparent)]
     Io(#[from] std::io::Error),
+    #[error(transparent)]
+    ActixWeb(#[from] actix_web::Error),
     #[error("{0}")]
     Custom(&'static str),
 }

@@ -1,7 +1,7 @@
 //! Schema
 mod account;
 
-pub use self::account::{accounts, Account};
+pub use self::account::Account;
 
 /// Table info for generating SQL
 pub type TableContext = (&'static str, Vec<&'static str>);

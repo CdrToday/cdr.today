@@ -4,6 +4,7 @@
 mod actix;
 mod cli;
 pub mod config;
+mod graphql;
 pub mod orm;
 mod result;
 pub mod schema;
