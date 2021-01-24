@@ -587,10 +587,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "cli"
-version = "0.1.0"
-
-[[package]]
 name = "combine"
 version = "3.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -670,25 +666,6 @@ dependencies = [
  "autocfg",
  "cfg-if 0.1.10",
  "lazy_static",
-]
-
-[[package]]
-name = "ct-model"
-version = "0.1.0"
-dependencies = [
- "ct-primitive",
-]
-
-[[package]]
-name = "ct-primitive"
-version = "0.1.0"
-
-[[package]]
-name = "ct-service"
-version = "0.1.0"
-dependencies = [
- "ct-model",
- "ct-primitive",
 ]
 
 [[package]]
@@ -1757,15 +1734,6 @@ checksum = "52e44394d2086d010551b14b53b1f24e31647570cd1deb0379e2c21b329aba00"
 dependencies = [
  "hostname",
  "quick-error",
-]
-
-[[package]]
-name = "runtime"
-version = "0.1.0"
-dependencies = [
- "ct-model",
- "ct-primitive",
- "ct-service",
 ]
 
 [[package]]

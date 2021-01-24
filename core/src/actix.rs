@@ -14,10 +14,9 @@ pub async fn serve(config: Config) -> Result<()> {
             .wrap(middleware::Compress::default())
             .wrap(
                 Cors::default()
-                    .allowed_origin("http://127.0.0.1:3000")
                     .allowed_methods(vec!["POST", "GET"])
                     .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
-                    .allowed_header(header::CONTENT_TYPE)
+                    .send_wildcard()
                     .supports_credentials()
                     .max_age(3600),
             )
