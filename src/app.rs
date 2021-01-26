@@ -1,8 +1,13 @@
 //! Acitx App
-use crate::{graphql, share::Shared, Config, Result};
+use crate::{middleware, service::graphql, share::Shared, Config, Result};
 use actix_cors::Cors;
-use actix_web::{http::header, middleware, web, App, HttpServer};
+use actix_web::{get, http::header, web, App, HttpResponse, HttpServer};
 use std::sync::{Arc, Mutex};
+
+#[get("/")]
+async fn index() -> HttpResponse {
+    HttpResponse::Ok().finish()
+}
 
 /// Serve actix App
 pub async fn serve(config: Config) -> Result<()> {
@@ -10,8 +15,10 @@ pub async fn serve(config: Config) -> Result<()> {
     let data = Arc::new(Mutex::new(Shared::new(config.clone())?));
     HttpServer::new(move || {
         App::new()
-            .wrap(middleware::Logger::default())
-            .wrap(middleware::Compress::default())
+            .data(data.clone())
+            .wrap(actix_web::middleware::Logger::default())
+            .wrap(actix_web::middleware::Compress::default())
+            .wrap(middleware::Auth)
             .wrap(
                 Cors::default()
                     .allowed_methods(vec!["POST", "GET"])
@@ -20,14 +27,14 @@ pub async fn serve(config: Config) -> Result<()> {
                     .supports_credentials()
                     .max_age(3600),
             )
-            .data(data.clone())
             .service(
                 web::resource("/graphgl")
-                    .route(web::post().to(graphql::graphql_route))
-                    .route(web::get().to(graphql::graphql_route)),
+                    .route(web::post().to(graphql::graphql))
+                    .route(web::get().to(graphql::graphql)),
             )
-            .service(web::resource("/playground").route(web::get().to(graphql::playground_route)))
-            .service(web::resource("/graphiql").route(web::get().to(graphql::graphiql_route)))
+            .service(web::resource("/playground").route(web::get().to(graphql::playground)))
+            .service(web::resource("/graphiql").route(web::get().to(graphql::graphiql)))
+            .service(index)
     })
     .bind(&http_url)?
     .run()

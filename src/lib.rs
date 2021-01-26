@@ -1,13 +1,14 @@
 //! cdr.today poc
 //!
 //! Quick version
-mod actix;
+mod app;
 mod cli;
 pub mod config;
-mod graphql;
-pub mod orm;
+mod middleware;
+mod orm;
 mod result;
 pub mod schema;
+mod service;
 mod share;
 
 #[macro_use]

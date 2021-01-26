@@ -8,9 +8,6 @@ use diesel::{
 use log::{info, warn};
 use std::process::{Command, Stdio};
 
-/// Connection pool
-pub type ConnPool = Pool<ConnectionManager<PgConnection>>;
-
 /// Pooled connection
 pub type PooledConn = PooledConnection<ConnectionManager<PgConnection>>;
 
