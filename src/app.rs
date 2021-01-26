@@ -1,19 +1,8 @@
 //! Acitx App
-use crate::{service::graphql, share::Shared, Config, Result};
+use crate::{middleware, service::graphql, share::Shared, Config, Result};
 use actix_cors::Cors;
-use actix_web::{
-    dev::ServiceRequest, get, http::header, middleware, web, App, Error, HttpResponse, HttpServer,
-};
-use actix_web_httpauth::{extractors::bearer::BearerAuth, middleware::HttpAuthentication};
+use actix_web::{get, http::header, web, App, HttpResponse, HttpServer};
 use std::sync::{Arc, Mutex};
-
-async fn ok_validator(
-    req: ServiceRequest,
-    credentials: BearerAuth,
-) -> core::result::Result<ServiceRequest, Error> {
-    eprintln!("{:?}", credentials);
-    Ok(req)
-}
 
 #[get("/")]
 async fn index() -> HttpResponse {
@@ -27,9 +16,9 @@ pub async fn serve(config: Config) -> Result<()> {
     HttpServer::new(move || {
         App::new()
             .data(data.clone())
-            .wrap(middleware::Logger::default())
-            .wrap(middleware::Compress::default())
-            .wrap(HttpAuthentication::bearer(ok_validator))
+            .wrap(actix_web::middleware::Logger::default())
+            .wrap(actix_web::middleware::Compress::default())
+            .wrap(middleware::Auth)
             .wrap(
                 Cors::default()
                     .allowed_methods(vec!["POST", "GET"])

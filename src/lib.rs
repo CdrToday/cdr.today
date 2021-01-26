@@ -4,6 +4,7 @@
 mod app;
 mod cli;
 pub mod config;
+mod middleware;
 mod orm;
 mod result;
 pub mod schema;
