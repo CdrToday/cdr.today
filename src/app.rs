@@ -1,8 +1,24 @@
 //! Acitx App
 use crate::{service::graphql, share::Shared, Config, Result};
 use actix_cors::Cors;
-use actix_web::{http::header, middleware, web, App, HttpServer};
+use actix_web::{
+    dev::ServiceRequest, get, http::header, middleware, web, App, Error, HttpResponse, HttpServer,
+};
+use actix_web_httpauth::{extractors::bearer::BearerAuth, middleware::HttpAuthentication};
 use std::sync::{Arc, Mutex};
+
+async fn ok_validator(
+    req: ServiceRequest,
+    credentials: BearerAuth,
+) -> core::result::Result<ServiceRequest, Error> {
+    eprintln!("{:?}", credentials);
+    Ok(req)
+}
+
+#[get("/")]
+async fn index() -> HttpResponse {
+    HttpResponse::Ok().finish()
+}
 
 /// Serve actix App
 pub async fn serve(config: Config) -> Result<()> {
@@ -13,6 +29,7 @@ pub async fn serve(config: Config) -> Result<()> {
             .data(data.clone())
             .wrap(middleware::Logger::default())
             .wrap(middleware::Compress::default())
+            .wrap(HttpAuthentication::bearer(ok_validator))
             .wrap(
                 Cors::default()
                     .allowed_methods(vec!["POST", "GET"])
@@ -28,6 +45,7 @@ pub async fn serve(config: Config) -> Result<()> {
             )
             .service(web::resource("/playground").route(web::get().to(graphql::playground)))
             .service(web::resource("/graphiql").route(web::get().to(graphql::graphiql)))
+            .service(index)
     })
     .bind(&http_url)?
     .run()
