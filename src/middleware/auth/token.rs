@@ -1,11 +1,6 @@
 //! Auth Token
 use super::{error, header};
-use actix_web::{
-    dev::ServiceRequest,
-    http::header::{HeaderName, HeaderValue},
-    Error,
-};
-use uuid::Uuid;
+use actix_web::{dev::ServiceRequest, Error};
 
 /// # No Token
 ///
@@ -17,8 +12,8 @@ use uuid::Uuid;
 ///
 /// If have token in header, check the database to find if the
 /// token is paired.
-pub fn token(req: &ServiceRequest, address: String) -> Result<(), Error> {
-    if let Some(token) = req.headers().get(header::TOKEN) {
+pub fn token(req: &ServiceRequest, _address: String) -> Result<(), Error> {
+    if let Some(_token) = req.headers().get(header::TOKEN) {
         Ok(())
     } else {
         Err(error::AuthError::TokenNotFound.into())

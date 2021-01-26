@@ -32,7 +32,7 @@ impl error::ResponseError for AuthError {
             Self::TokenNotFound => builder
                 .set_header(header::UUID, Uuid::new_v4().to_string())
                 .body(&self.to_string()),
-            err => builder.body(&self.to_string()),
+            _ => builder.body(&self.to_string()),
         }
     }
 
