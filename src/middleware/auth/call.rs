@@ -1,11 +1,9 @@
 //! Auth call
-use super::{header::TOKEN, token::token};
+use super::{address::address, token::token};
 use actix_web::{dev::ServiceRequest, Error};
 
 /// Auth calling service request
-pub fn call(mut req: ServiceRequest) -> Result<ServiceRequest, Error> {
-    // Check token
-    token(&mut req)?;
-    println!("{:?}", req.headers().get(TOKEN));
+pub fn call(req: ServiceRequest) -> Result<ServiceRequest, Error> {
+    token(&req, address(&req)?)?;
     Ok(req)
 }

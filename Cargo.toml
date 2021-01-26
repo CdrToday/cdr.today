@@ -29,7 +29,8 @@ log = "0.4.0"
 thiserror = "1.0.23"
 derive_more = "0.99.11"
 
-# data
+# encoding
+bs58 = "0.4.0"
 toml = "0.5.8"
 serde = { version = "1.0.120", features = ["derive"] }
 
