@@ -9,11 +9,13 @@ pub enum Error {
     #[error(transparent)]
     Diesel(#[from] diesel::result::Error),
     #[error(transparent)]
-    R2d2(#[from] diesel::r2d2::PoolError),
+    R2d2(#[from] r2d2::Error),
     #[error(transparent)]
     Io(#[from] std::io::Error),
     #[error(transparent)]
     ActixWeb(#[from] actix_web::Error),
+    #[error(transparent)]
+    Reid(#[from] redis::RedisError),
     #[error("{0}")]
     Custom(&'static str),
 }

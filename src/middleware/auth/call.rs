@@ -4,6 +4,6 @@ use actix_web::{dev::ServiceRequest, Error};
 
 /// Auth calling service request
 pub fn call(req: ServiceRequest) -> Result<ServiceRequest, Error> {
-    token(&req, address(&req)?)?;
+    token(&req, &address(&req)?)?;
     Ok(req)
 }

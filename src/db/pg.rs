@@ -1,35 +1,35 @@
 //! orm, postgresql here
 use crate::{Config, Result};
-use diesel::{
-    pg::PgConnection,
-    r2d2::{ConnectionManager, Pool, PooledConnection},
-    RunQueryDsl,
-};
+use diesel::{pg::PgConnection, r2d2::ConnectionManager, RunQueryDsl};
 use log::{info, warn};
+use r2d2::{Pool, PooledConnection};
 use std::process::{Command, Stdio};
-
-/// Pooled connection
-pub type PooledConn = PooledConnection<ConnectionManager<PgConnection>>;
 
 /// CREATE TABLE Tempalte
 static CREATE_TABLE: &str = "CREATE TABLE IF NOT EXISTS ${TABLE_NAME} (${TABLE_CTX})";
 
-/// Orm operation set
-pub struct Orm(Pool<ConnectionManager<PgConnection>>);
+/// Pooled PostgreSQL Connection
+pub type Conn = PooledConnection<ConnectionManager<PgConnection>>;
 
-impl Orm {
+/// Pg operation set
+pub struct Pg(Pool<ConnectionManager<PgConnection>>);
+
+impl Pg {
     // only support OSX for now
     fn create_db_if_not_exists(config: &Config) -> Result<()> {
+        let username = whoami::username();
+        let db_name = config.pg.db.as_ref().unwrap_or(&username);
+
         if !String::from_utf8_lossy(&Command::new("psql").arg("-l").output()?.stdout)
-            .contains(&format!("\n {}", &config.pg.name))
+            .contains(&format!("\n {}", &db_name))
         {
-            warn!("Database {} doesn't exists, creating...", &config.pg.name);
+            warn!("Database {} doesn't exists, creating...", &db_name);
             Command::new("createdb")
-                .arg(&config.pg.name)
+                .arg(&db_name)
                 .stdout(Stdio::null())
                 .status()?;
 
-            info!("Created databse {}", &config.pg.name);
+            info!("Created databse {}", &db_name);
         }
 
         Ok(())
@@ -58,7 +58,7 @@ impl Orm {
     }
 
     /// Give out the pool
-    pub fn conn(&self) -> Result<PooledConn> {
+    pub fn conn(&self) -> Result<Conn> {
         Ok(self.0.get()?)
     }
 }

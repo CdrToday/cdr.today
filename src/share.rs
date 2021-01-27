@@ -1,6 +1,6 @@
 //! Shared data
 use crate::{
-    orm::Orm,
+    db::{Pg, Redis},
     schema::{Account, Schema},
     service::graphql::Query,
     Config, Result,
@@ -9,14 +9,16 @@ use juniper::{Context, EmptyMutation, EmptySubscription, RootNode};
 
 /// Shared data
 pub struct Shared {
-    pub orm: Orm,
+    pub pg: Pg,
+    pub redis: Redis,
     pub config: Config,
-    pub root_node: RootNode<'static, Query, EmptyMutation<Orm>, EmptySubscription<Orm>>,
+    pub root_node: RootNode<'static, Query, EmptyMutation<Self>, EmptySubscription<Self>>,
 }
 
 impl Context for Shared {}
 
 impl Shared {
+    /// Init tables
     fn gather_tables() -> Vec<(&'static str, Vec<&'static str>)> {
         vec![<Account as Schema>::table()]
     }
@@ -24,7 +26,8 @@ impl Shared {
     /// New shared data
     pub fn new(config: Config) -> Result<Shared> {
         Ok(Shared {
-            orm: Orm::new(&config)?.create_tables(Self::gather_tables())?,
+            pg: Pg::new(&config)?.create_tables(Self::gather_tables())?,
+            redis: Redis::new(&config)?,
             config,
             root_node: RootNode::new(Query, EmptyMutation::new(), EmptySubscription::new()),
         })
