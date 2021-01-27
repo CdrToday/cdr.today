@@ -3,6 +3,10 @@ use super::header;
 use actix_web::{dev::HttpResponseBuilder, error, http::StatusCode, HttpResponse};
 use derive_more::{Display, Error};
 
+static UUID_NOT_FOUND: &str =
+    "Uuid not found in header CDR-TODAY-UUID, sign the returned UUID with ED25519 secret key.";
+static UUID_INVALID: &str =
+    "Uuid invalid in header CDR-TODAY-UUID, check your token in CDR-TODAY-TOKEN";
 static TOKEN_NOT_FOUND: &str =
     "Token not found in header CDR-TODAY-TOKEN, sign the returned UUID with ED25519 secret key.";
 static TOKEN_INVALID: &str =
@@ -15,10 +19,16 @@ static ADDRESS_INVALID: &str =
 /// Auth Error
 #[derive(Debug, Display, Error)]
 pub enum AuthError {
+    /// 401, uuid not found, return a uuid for signing
+    #[display(fmt = "{}", UUID_NOT_FOUND)]
+    UuidNotFound { uuid: String },
+    /// 401, uuid invalid, return a uuid for signing
+    #[display(fmt = "{}", UUID_INVALID)]
+    UuidInvalid { uuid: String },
     /// 401, token not found, return a uuid for signing
     #[display(fmt = "{}", TOKEN_NOT_FOUND)]
     TokenNotFound { uuid: String },
-    /// 401, token not found, return a uuid for signing
+    /// 401, token invalid, return a uuid for signing
     #[display(fmt = "{}", TOKEN_INVALID)]
     TokenInvalid { uuid: String },
     /// 401, address not found

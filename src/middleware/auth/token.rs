@@ -17,9 +17,13 @@ use uuid::Uuid;
 /// token is paired.
 pub fn token(req: &ServiceRequest, address: &String) -> Result<(), Error> {
     if let Some(token) = req.headers().get(header::TOKEN) {
-        let address = Address::from_str(&address).map_err(|_| error::AuthError::AddressInvalid)?;
-        if !address
-            .verify(&hex::decode(token).map_err(|_| error::AuthError::AddressInvalid)?)
+        let verifier = Address::from_str(&address).map_err(|_| error::AuthError::AddressInvalid)?;
+        let uuid = super::uuid::uuid(req, address)?;
+        if !verifier
+            .verify_oneshot(
+                &hex::decode(token).map_err(|_| error::AuthError::AddressInvalid)?,
+                uuid.as_bytes(),
+            )
             .map_err(|_| error::AuthError::AddressInvalid)?
         {
             Err(error::AuthError::TokenInvalid {
