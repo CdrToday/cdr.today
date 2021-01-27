@@ -4,7 +4,7 @@ use r2d2::{Pool, PooledConnection};
 use redis::Client;
 
 /// Redis Pooled Connection
-pub type Conn = PooledConnection<Client>;
+type Conn = PooledConnection<Client>;
 
 /// r2d2 Redis
 pub struct Redis(Pool<Client>);
