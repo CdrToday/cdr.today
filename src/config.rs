@@ -6,85 +6,103 @@ use serde::{Deserialize, Serialize};
 pub struct Config {
     pub http: Http,
     /// Postgres config
-    pub pg: Pg,
+    pub pg: Connection,
 }
 
 /// Http config
 #[derive(Clone, Deserialize, Serialize)]
 pub struct Http {
-    pub addr: String,
+    pub hostname: String,
     pub port: u16,
 }
 
 impl Default for Http {
     fn default() -> Http {
         Http {
-            addr: "0.0.0.0".into(),
+            hostname: "0.0.0.0".into(),
             port: 3000,
         }
     }
 }
 
 impl Http {
-    /// Convertw addr and port to url
+    /// Convertw hostname and port to url
     pub fn url(&self) -> String {
-        format!("{}:{}", self.addr, self.port)
+        format!("{}:{}", self.hostname, self.port)
     }
 }
 
-/// Postgres config
+/// Connection name trait
+pub trait ConnectionName {
+    fn name() -> &'static str;
+    fn database_name() -> Option<String>;
+}
+
+/// Database protocol config
 #[derive(Clone, Deserialize, Serialize)]
-pub struct Pg {
-    /// databse name
+pub struct Connection {
+    /// protocol type
+    #[serde(skip)]
     pub name: String,
-    /// postgres addr
-    pub addr: String,
-    /// postgres port
+    /// databse name
+    pub db: Option<String>,
+    /// conn hostname
+    pub hostname: Option<String>,
+    /// conn port
     pub port: Option<u16>,
-    /// If has username
-    pub user: Option<String>,
+    /// If has usernamename
+    pub username: Option<String>,
     /// If has password
-    pub secret: Option<String>,
+    pub passwd: Option<String>,
     /// If override the connection url of postgresql
     pub r#override: Option<String>,
     /// Connection numbers
     pub conn: u8,
 }
 
-impl<'c> Default for Pg {
-    fn default() -> Pg {
-        Pg {
-            name: "cdr_today".into(),
-            addr: "localhost".into(),
+impl Default for Connection {
+    fn default() -> Connection {
+        Connection {
+            name: "postgresql".to_string(),
+            db: None,
+            hostname: None,
             port: None,
-            user: None,
-            secret: None,
+            username: None,
+            passwd: None,
             r#override: None,
             conn: 3,
         }
     }
 }
 
-impl Pg {
-    /// PostgresQL url
-    ///
-    /// https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING
-    pub fn url(&self) -> String {
-        let mut url = String::from("postgresql://");
+impl Connection {
+    pub fn new(protocol: String) -> Self {
+        let mut conn = Self::default();
+        conn.name = protocol;
+        conn
+    }
 
-        // Username and password
-        match (&self.user, &self.secret) {
-            (Some(user), Some(secret)) => {
-                url.push_str(&format!("{}@{}", user, secret));
+    /// Encode url
+    pub fn url(&self) -> String {
+        let mut url = format!("{}://", self.name);
+
+        // Usernamename and password
+        match (&self.username, &self.passwd) {
+            (Some(username), Some(passwd)) => {
+                url.push_str(&format!("{}@{}", username, passwd));
             }
-            (Some(user), None) => {
-                url.push_str(&format!("{}@", user));
+            (Some(username), None) => {
+                url.push_str(&format!("{}@", username));
             }
             _ => {}
         }
 
-        // Push addr
-        url.push_str(&self.addr);
+        // Push hostname
+        if let Some(hostname) = &self.hostname {
+            url.push_str(hostname);
+        } else {
+            url.push_str("0.0.0.0");
+        }
 
         // Push port
         if let Some(port) = self.port {
@@ -92,7 +110,9 @@ impl Pg {
         }
 
         // If with name
-        url.push_str(&format!("/{}", self.name));
+        if let Some(db) = &self.db {
+            url.push_str(&format!("/{}", db));
+        }
 
         url
     }

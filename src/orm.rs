@@ -14,22 +14,28 @@ pub type PooledConn = PooledConnection<ConnectionManager<PgConnection>>;
 /// CREATE TABLE Tempalte
 static CREATE_TABLE: &str = "CREATE TABLE IF NOT EXISTS ${TABLE_NAME} (${TABLE_CTX})";
 
+/// Default database name
+static DEFAULT_NAME: &str = "cdr_today";
+
 /// Orm operation set
 pub struct Orm(Pool<ConnectionManager<PgConnection>>);
 
 impl Orm {
     // only support OSX for now
     fn create_db_if_not_exists(config: &Config) -> Result<()> {
+        let default_name = DEFAULT_NAME.to_string();
+        let db_name = config.pg.db.as_ref().unwrap_or(&default_name);
+
         if !String::from_utf8_lossy(&Command::new("psql").arg("-l").output()?.stdout)
-            .contains(&format!("\n {}", &config.pg.name))
+            .contains(&format!("\n {}", &db_name))
         {
-            warn!("Database {} doesn't exists, creating...", &config.pg.name);
+            warn!("Database {} doesn't exists, creating...", &db_name);
             Command::new("createdb")
-                .arg(&config.pg.name)
+                .arg(&db_name)
                 .stdout(Stdio::null())
                 .status()?;
 
-            info!("Created databse {}", &config.pg.name);
+            info!("Created databse {}", &db_name);
         }
 
         Ok(())
