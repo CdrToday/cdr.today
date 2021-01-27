@@ -4,8 +4,10 @@ use serde::{Deserialize, Serialize};
 mod conn;
 mod http;
 
+pub use conn::Connection;
+
 /// cdr.today Config
-#[derive(Clone, Default, Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize)]
 pub struct Config {
     /// Http Config
     pub http: http::Http,
@@ -13,4 +15,13 @@ pub struct Config {
     pub pg: conn::Connection,
     /// Redis config
     pub redis: conn::Connection,
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Config {
+            redis: conn::Connection::new("redis".to_string()),
+            ..Default::default()
+        }
+    }
 }

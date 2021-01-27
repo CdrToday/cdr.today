@@ -1,6 +1,6 @@
 //! Account Schema
 use super::{Schema, TableContext};
-use crate::{orm::PooledConn, Result};
+use crate::{db::PgConn as Conn, Result};
 use diesel::{ExpressionMethods, QueryDsl, Queryable, RunQueryDsl};
 use juniper::GraphQLObject;
 
@@ -28,7 +28,7 @@ impl Schema for Account {
 
 impl Account {
     /// First
-    pub fn first(conn: &PooledConn, addr: String) -> Result<Account> {
+    pub fn first(conn: &Conn, addr: String) -> Result<Account> {
         Ok(accounts_table
             .filter(addr_col.eq(&addr))
             .first::<Self>(conn)?)
