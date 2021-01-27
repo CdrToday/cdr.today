@@ -1,43 +1,6 @@
 //! config
 use serde::{Deserialize, Serialize};
 
-/// cdr.today Config
-#[derive(Clone, Default, Deserialize, Serialize)]
-pub struct Config {
-    pub http: Http,
-    /// Postgres config
-    pub pg: Connection,
-}
-
-/// Http config
-#[derive(Clone, Deserialize, Serialize)]
-pub struct Http {
-    pub hostname: String,
-    pub port: u16,
-}
-
-impl Default for Http {
-    fn default() -> Http {
-        Http {
-            hostname: "0.0.0.0".into(),
-            port: 3000,
-        }
-    }
-}
-
-impl Http {
-    /// Convertw hostname and port to url
-    pub fn url(&self) -> String {
-        format!("{}:{}", self.hostname, self.port)
-    }
-}
-
-/// Connection name trait
-pub trait ConnectionName {
-    fn name() -> &'static str;
-    fn database_name() -> Option<String>;
-}
-
 /// Database protocol config
 #[derive(Clone, Deserialize, Serialize)]
 pub struct Connection {
