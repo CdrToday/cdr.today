@@ -32,6 +32,7 @@ derive_more = "0.99.11"
 whoami = "1.1.0"
 
 # encoding
+hex = "0.4.2"
 bs58 = "0.4.0"
 toml = "0.5.8"
 serde = { version = "1.0.120", features = ["derive"] }

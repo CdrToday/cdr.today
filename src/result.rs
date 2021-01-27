@@ -16,8 +16,15 @@ pub enum Error {
     ActixWeb(#[from] actix_web::Error),
     #[error(transparent)]
     Reid(#[from] redis::RedisError),
+    #[error(transparent)]
+    Base58Decode(#[from] bs58::decode::Error),
+    #[error(transparent)]
+    OpenSSLStack(#[from] openssl::error::ErrorStack),
     #[error("{0}")]
     Custom(&'static str),
+    /// Invalid Address Length
+    #[error("invalid address length")]
+    InvalidAddressLength,
 }
 
 impl From<&'static str> for Error {

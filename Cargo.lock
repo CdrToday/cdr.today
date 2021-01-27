@@ -1617,6 +1617,7 @@ dependencies = [
  "env_logger",
  "etc",
  "futures",
+ "hex",
  "juniper",
  "juniper_actix",
  "log",

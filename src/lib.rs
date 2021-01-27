@@ -4,6 +4,7 @@
 mod app;
 mod cli;
 pub mod config;
+mod crypto;
 mod db;
 mod middleware;
 mod result;

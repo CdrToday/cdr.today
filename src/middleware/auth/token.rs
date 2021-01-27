@@ -1,6 +1,6 @@
 //! Auth Token
 use super::{error, header};
-use crate::share::Shared;
+use crate::{crypto::Address, share::Shared};
 use actix_web::{dev::ServiceRequest, Error};
 use redis::Commands;
 use uuid::Uuid;
@@ -16,8 +16,19 @@ use uuid::Uuid;
 /// If have token in header, check the database to find if the
 /// token is paired.
 pub fn token(req: &ServiceRequest, address: &String) -> Result<(), Error> {
-    if let Some(_token) = req.headers().get(header::TOKEN) {
-        Ok(())
+    if let Some(token) = req.headers().get(header::TOKEN) {
+        let address = Address::from_str(&address).map_err(|_| error::AuthError::AddressInvalid)?;
+        if !address
+            .verify(&hex::decode(token).map_err(|_| error::AuthError::AddressInvalid)?)
+            .map_err(|_| error::AuthError::AddressInvalid)?
+        {
+            Err(error::AuthError::TokenInvalid {
+                uuid: Uuid::new_v4().to_string(),
+            }
+            .into())
+        } else {
+            Ok(())
+        }
     } else {
         let uuid = Uuid::new_v4().to_string();
         if let Some(data) = req.app_data::<Shared>() {

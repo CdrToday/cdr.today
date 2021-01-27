@@ -5,6 +5,8 @@ use derive_more::{Display, Error};
 
 static TOKEN_NOT_FOUND: &str =
     "Token not found in header CDR-TODAY-TOKEN, sign the returned UUID with ED25519 secret key.";
+static TOKEN_INVALID: &str =
+    "Token invalid in header CDR-TODAY-TOKEN, check your address in CDR-TODAY-ADDRESS.";
 static ADDRESS_NOT_FOUND: &str =
     "Address not found in header CDR-TODAY-ADDRESS, should be a ED25519 public key in base58.";
 static ADDRESS_INVALID: &str =
@@ -16,6 +18,9 @@ pub enum AuthError {
     /// 401, token not found, return a uuid for signing
     #[display(fmt = "{}", TOKEN_NOT_FOUND)]
     TokenNotFound { uuid: String },
+    /// 401, token not found, return a uuid for signing
+    #[display(fmt = "{}", TOKEN_INVALID)]
+    TokenInvalid { uuid: String },
     /// 401, address not found
     #[display(fmt = "{}", ADDRESS_NOT_FOUND)]
     AddressNotFound,
