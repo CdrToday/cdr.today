@@ -26,10 +26,7 @@ pub fn token(req: &ServiceRequest, address: &String) -> Result<(), Error> {
                 &hex::decode(token)
                     .map_err(|_| error::AuthError::TokenInvalid { uuid: uuid.clone() })?,
             )
-            .map_err(|e| {
-                println!("{}", e);
-                error::AuthError::AddressInvalid
-            })?
+            .map_err(|_| error::AuthError::UuidInvalid { uuid: uuid.clone() })?
         {
             Err(error::AuthError::TokenInvalid {
                 uuid: Uuid::new_v4().to_string(),

@@ -5,7 +5,13 @@ use crate::{
     service::graphql::Query,
     Config, Result,
 };
+use actix_web::web::Data;
 use juniper::{EmptyMutation, EmptySubscription, RootNode};
+use std::{
+    sync::{Arc, Mutex, MutexGuard},
+    thread,
+    time::Duration,
+};
 
 /// Shared data
 pub struct Shared {
@@ -29,5 +35,20 @@ impl Shared {
             config,
             root_node: RootNode::new(Query, EmptyMutation::new(), EmptySubscription::new()),
         })
+    }
+}
+
+/// Shared data in actix_web
+pub type Share = Data<Arc<Mutex<Shared>>>;
+
+/// Block Mutex
+pub fn block<'b>(share: &'b Share) -> MutexGuard<'b, Shared> {
+    loop {
+        if let Ok(share) = share.lock() {
+            return share;
+        } else {
+            thread::sleep(Duration::from_secs(1));
+            continue;
+        }
     }
 }
