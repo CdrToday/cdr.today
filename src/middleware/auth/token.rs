@@ -1,8 +1,10 @@
 //! Auth Token
-use super::{error, header};
 use crate::{
     crypto::Address,
-    share::{block, Share},
+    middleware::{
+        auth::{error, header, util::set_uuid},
+        util,
+    },
 };
 use actix_web::{dev::ServiceRequest, Error};
 use uuid::Uuid;
@@ -18,32 +20,39 @@ use uuid::Uuid;
 /// If have token in header, check the database to find if the
 /// token is paired.
 pub fn token(req: &ServiceRequest, address: &String) -> Result<(), Error> {
+    let data = util::data(req)?;
     if let Some(token) = req.headers().get(header::TOKEN) {
         let verifier = Address::from_str(&address).map_err(|_| error::AuthError::AddressInvalid)?;
         let uuid = super::uuid::uuid(req, address)?;
-        if !verifier
-            .verify(
-                uuid.as_bytes(),
-                &hex::decode(token)
-                    .map_err(|_| error::AuthError::TokenInvalid { uuid: uuid.clone() })?,
-            )
-            .map_err(|_| error::AuthError::UuidInvalid { uuid: uuid.clone() })?
-        {
+
+        // map token bytes
+        let token_bytes = match hex::decode(token) {
+            Err(_) => {
+                set_uuid(&data, &address, &uuid).unwrap_or_default();
+                return Err(error::AuthError::TokenInvalid { uuid: uuid.clone() }.into());
+            }
+            Ok(b) => b,
+        };
+
+        // Verify the signature
+        if match verifier.verify(uuid.as_bytes(), &token_bytes) {
+            Err(_) => {
+                set_uuid(&data, &address, &uuid).unwrap_or_default();
+                return Err(error::AuthError::UuidInvalid { uuid: uuid.clone() }.into());
+            }
+            Ok(r) => r,
+        } {
+            Ok(())
+        } else {
+            set_uuid(&data, &address, &uuid)?;
             Err(error::AuthError::TokenInvalid {
                 uuid: Uuid::new_v4().to_string(),
             }
             .into())
-        } else {
-            Ok(())
         }
     } else {
         let uuid = Uuid::new_v4().to_string();
-        if let Some(data) = req.app_data::<Share>() {
-            let _: () = block(data).redis.set(address, &uuid).map_err(|_| {
-                actix_web::error::ErrorInternalServerError("Set uuid into redis failed")
-            })?;
-        }
-
+        set_uuid(&data, &address, &uuid)?;
         Err(error::AuthError::TokenNotFound { uuid }.into())
     }
 }

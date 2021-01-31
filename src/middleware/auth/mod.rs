@@ -15,6 +15,7 @@ mod call;
 mod error;
 mod header;
 mod token;
+mod util;
 mod uuid;
 
 /// cdr.today auth
