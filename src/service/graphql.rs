@@ -13,15 +13,16 @@ pub async fn playground() -> core::result::Result<HttpResponse, Error> {
     playground_handler("/graphgl", None).await
 }
 
+#[allow(clippy::await_holding_lock)]
 pub async fn graphql(
     req: actix_web::HttpRequest,
     payload: actix_web::web::Payload,
     shared: web::Data<Arc<Mutex<Shared>>>,
 ) -> Result<HttpResponse, Error> {
     if let Ok(share) = shared.try_lock() {
-        let resp = graphql_handler(&share.root_node, &share.pg, req, payload).await;
+        let resp = graphql_handler(&share.root_node, &share.pg, req, payload).await?;
         drop(share);
-        resp
+        Ok(resp)
     } else {
         Err(InternalError::new("lock shared data failed", StatusCode::SERVICE_UNAVAILABLE).into())
     }
