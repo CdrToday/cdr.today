@@ -19,7 +19,9 @@ pub async fn graphql(
     shared: web::Data<Arc<Mutex<Shared>>>,
 ) -> Result<HttpResponse, Error> {
     if let Ok(share) = shared.try_lock() {
-        graphql_handler(&share.root_node, &share.pg, req, payload).await
+        let resp = graphql_handler(&share.root_node, &share.pg, req, payload).await;
+        drop(share);
+        resp
     } else {
         Err(InternalError::new("lock shared data failed", StatusCode::SERVICE_UNAVAILABLE).into())
     }
