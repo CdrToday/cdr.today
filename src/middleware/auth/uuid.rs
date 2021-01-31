@@ -2,7 +2,6 @@
 use super::{error, header};
 use crate::share::{block, Share};
 use actix_web::{dev::ServiceRequest, Error};
-use redis::Commands;
 use uuid::Uuid;
 
 /// # No UUID
@@ -20,16 +19,9 @@ pub fn uuid(req: &ServiceRequest, address: &String) -> Result<String, Error> {
         })?;
 
         if let Some(data) = req.app_data::<Share>() {
-            let stored_uuid: String = block(data)
-                .redis
-                .conn()
-                .map_err(|_| {
-                    actix_web::error::ErrorInternalServerError("Get redis connection failed")
-                })?
-                .get(address)
-                .map_err(|_| {
-                    actix_web::error::ErrorInternalServerError("Get address from redis failed")
-                })?;
+            let stored_uuid: String = block(data).redis.get(address).map_err(|_| {
+                actix_web::error::ErrorInternalServerError("Get address from redis failed")
+            })?;
 
             if uuid != stored_uuid {
                 Err(error::AuthError::UuidInvalid { uuid: new_uuid }.into())
@@ -44,16 +36,9 @@ pub fn uuid(req: &ServiceRequest, address: &String) -> Result<String, Error> {
     } else {
         let uuid = Uuid::new_v4().to_string();
         if let Some(data) = req.app_data::<Share>() {
-            let _: () = block(data)
-                .redis
-                .conn()
-                .map_err(|_| {
-                    actix_web::error::ErrorInternalServerError("Get redis connection failed")
-                })?
-                .set(address, &uuid)
-                .map_err(|_| {
-                    actix_web::error::ErrorInternalServerError("Set uuid into redis failed")
-                })?;
+            let _: () = block(data).redis.set(address, &uuid).map_err(|_| {
+                actix_web::error::ErrorInternalServerError("Set uuid into redis failed")
+            })?;
             Err(error::AuthError::UuidNotFound { uuid }.into())
         } else {
             Err(actix_web::error::ErrorInternalServerError(

@@ -1,9 +1,10 @@
 //! Auth Token
 use super::{error, header};
-use crate::{crypto::Address, share::Shared};
-use actix_web::{dev::ServiceRequest, web::Data, Error};
-use redis::Commands;
-use std::sync::{Arc, Mutex};
+use crate::{
+    crypto::Address,
+    share::{block, Share},
+};
+use actix_web::{dev::ServiceRequest, Error};
 use uuid::Uuid;
 
 /// # No Token
@@ -37,19 +38,10 @@ pub fn token(req: &ServiceRequest, address: &String) -> Result<(), Error> {
         }
     } else {
         let uuid = Uuid::new_v4().to_string();
-        if let Some(data) = req.app_data::<Data<Arc<Mutex<Shared>>>>() {
-            let _: () = data
-                .lock()
-                .unwrap()
-                .redis
-                .conn()
-                .map_err(|_| {
-                    actix_web::error::ErrorInternalServerError("Get redis connection failed")
-                })?
-                .set(address, &uuid)
-                .map_err(|_| {
-                    actix_web::error::ErrorInternalServerError("Set uuid into redis failed")
-                })?;
+        if let Some(data) = req.app_data::<Share>() {
+            let _: () = block(data).redis.set(address, &uuid).map_err(|_| {
+                actix_web::error::ErrorInternalServerError("Set uuid into redis failed")
+            })?;
         }
 
         Err(error::AuthError::TokenNotFound { uuid }.into())
