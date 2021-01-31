@@ -1,6 +1,7 @@
 //! orm, postgresql here
 use crate::{Config, Result};
 use diesel::{pg::PgConnection, r2d2::ConnectionManager, RunQueryDsl};
+use juniper::Context;
 use log::{info, warn};
 use r2d2::{Pool, PooledConnection};
 use std::process::{Command, Stdio};
@@ -62,3 +63,5 @@ impl Pg {
         Ok(self.0.get()?)
     }
 }
+
+impl Context for Pg {}

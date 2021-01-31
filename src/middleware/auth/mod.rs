@@ -21,6 +21,7 @@ mod uuid;
 ///
 /// A complete auth flow is like
 ///
+/// ```text
 ///          empty header
 /// clinet -----------------> server
 ///
@@ -32,6 +33,7 @@ mod uuid;
 ///
 ///          verify signature, token saved in server
 /// server ---------------------------------------------> client
+/// ```
 pub struct Auth;
 
 // Middleware factory is `Transform` trait from actix-service crate

@@ -5,17 +5,15 @@ use crate::{
     service::graphql::Query,
     Config, Result,
 };
-use juniper::{Context, EmptyMutation, EmptySubscription, RootNode};
+use juniper::{EmptyMutation, EmptySubscription, RootNode};
 
 /// Shared data
 pub struct Shared {
     pub pg: Pg,
     pub redis: Redis,
     pub config: Config,
-    pub root_node: RootNode<'static, Query, EmptyMutation<Self>, EmptySubscription<Self>>,
+    pub root_node: RootNode<'static, Query, EmptyMutation<Pg>, EmptySubscription<Pg>>,
 }
-
-impl Context for Shared {}
 
 impl Shared {
     /// Init tables

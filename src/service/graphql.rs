@@ -1,5 +1,5 @@
 //! GraphQL service
-use crate::{schema::Account, share::Shared};
+use crate::{db::Pg, schema::Account, share::Shared};
 use actix_web::{error::InternalError, http::StatusCode, web, Error, HttpResponse};
 use juniper::graphql_object;
 use juniper_actix::{graphiql_handler, graphql_handler, playground_handler};
@@ -19,7 +19,7 @@ pub async fn graphql(
     shared: web::Data<Arc<Mutex<Shared>>>,
 ) -> Result<HttpResponse, Error> {
     if let Ok(share) = shared.try_lock() {
-        graphql_handler(&share.root_node, &share, req, payload).await
+        graphql_handler(&share.root_node, &share.pg, req, payload).await
     } else {
         Err(InternalError::new("lock shared data failed", StatusCode::SERVICE_UNAVAILABLE).into())
     }
@@ -28,14 +28,18 @@ pub async fn graphql(
 /// GraphQL function set
 pub struct Query;
 
-#[graphql_object(context = Shared)]
+#[graphql_object(context = Pg)]
 impl Query {
     fn version() -> String {
         "1.0".to_string()
     }
 
+    fn ping() -> String {
+        "pong".to_string()
+    }
+
     #[graphql(arguments(addr(description = "address of the user")))]
-    fn account(shared: &Shared, addr: String) -> Option<Account> {
-        Account::first(&shared.pg.conn().ok()?, addr).ok()
+    fn account(pg: &Pg, addr: String) -> Option<Account> {
+        Account::first(&pg.conn().ok()?, addr).ok()
     }
 }

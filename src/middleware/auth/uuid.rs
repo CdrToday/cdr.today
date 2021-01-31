@@ -1,8 +1,9 @@
 //! CDR-TODAY-UUID
 use super::{error, header};
 use crate::share::Shared;
-use actix_web::{dev::ServiceRequest, Error};
+use actix_web::{dev::ServiceRequest, web::Data, Error};
 use redis::Commands;
+use std::sync::{Arc, Mutex};
 use uuid::Uuid;
 
 /// # No UUID
@@ -19,16 +20,18 @@ pub fn uuid(req: &ServiceRequest, address: &String) -> Result<String, Error> {
             uuid: new_uuid.clone(),
         })?;
 
-        if let Some(data) = req.app_data::<Shared>() {
+        if let Some(data) = req.app_data::<Data<Arc<Mutex<Shared>>>>() {
             let stored_uuid: String = data
+                .lock()
+                .unwrap()
                 .redis
                 .conn()
-                .map_err(|_| {
+                .map_err(|e| {
                     actix_web::error::ErrorInternalServerError("Get redis connection failed")
                 })?
                 .get(address)
-                .map_err(|_| {
-                    actix_web::error::ErrorInternalServerError("Get data from redis failed")
+                .map_err(|e| {
+                    actix_web::error::ErrorInternalServerError("Get address from redis failed")
                 })?;
 
             if uuid != stored_uuid {
@@ -43,8 +46,10 @@ pub fn uuid(req: &ServiceRequest, address: &String) -> Result<String, Error> {
         }
     } else {
         let uuid = Uuid::new_v4().to_string();
-        if let Some(data) = req.app_data::<Shared>() {
+        if let Some(data) = req.app_data::<Data<Arc<Mutex<Shared>>>>() {
             let _: () = data
+                .lock()
+                .unwrap()
                 .redis
                 .conn()
                 .map_err(|_| {

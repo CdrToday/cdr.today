@@ -18,13 +18,16 @@ pub enum Error {
     Reid(#[from] redis::RedisError),
     #[error(transparent)]
     Base58Decode(#[from] bs58::decode::Error),
-    #[error(transparent)]
-    OpenSSLStack(#[from] openssl::error::ErrorStack),
     #[error("{0}")]
     Custom(&'static str),
     /// Invalid Address Length
     #[error("invalid address length")]
     InvalidAddressLength,
+    /// Invalid Address Length
+    #[error("invalid signature length")]
+    InvalidSignatureLength,
+    #[error("Ed25519 signature failed")]
+    VerifySignatureFaield(#[from] ed25519_dalek::SignatureError),
 }
 
 impl From<&'static str> for Error {

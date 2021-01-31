@@ -21,7 +21,8 @@ impl Default for Config {
     fn default() -> Self {
         Config {
             redis: conn::Connection::new("redis".to_string()),
-            ..Default::default()
+            pg: conn::Connection::default(),
+            http: http::Http::default(),
         }
     }
 }
