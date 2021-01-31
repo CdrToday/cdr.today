@@ -1,10 +1,10 @@
 //! Auth address
 use super::{error, header};
-use actix_web::{dev::ServiceRequest, Error};
+use actix_web::{http::header::HeaderMap, Error};
 
 /// Check address
-pub fn address(req: &ServiceRequest) -> Result<String, Error> {
-    if let Some(address) = req.headers().get(header::ADDRESS) {
+pub fn address(headers: &HeaderMap) -> Result<String, Error> {
+    if let Some(address) = headers.get(header::ADDRESS) {
         if address.len() != 44 {
             return Err(error::AuthError::AddressInvalid.into());
         }

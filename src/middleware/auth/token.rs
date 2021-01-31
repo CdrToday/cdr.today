@@ -1,12 +1,11 @@
 //! Auth Token
 use crate::{
     crypto::Address,
-    middleware::{
-        auth::{error, header, util::set_uuid},
-        util,
-    },
+    middleware::auth::{error, header, util::set_uuid},
+    share::Shared,
 };
-use actix_web::{dev::ServiceRequest, Error};
+use actix_web::{http::header::HeaderMap, Error};
+use std::sync::MutexGuard;
 use uuid::Uuid;
 
 /// # No Token
@@ -19,11 +18,14 @@ use uuid::Uuid;
 ///
 /// If have token in header, check the database to find if the
 /// token is paired.
-pub fn token(req: &ServiceRequest, address: &String) -> Result<(), Error> {
-    let data = util::data(req)?;
-    if let Some(token) = req.headers().get(header::TOKEN) {
+pub fn token<'t>(
+    data: &MutexGuard<'t, Shared>,
+    headers: &HeaderMap,
+    address: &String,
+) -> Result<(), Error> {
+    if let Some(token) = headers.get(header::TOKEN) {
         let verifier = Address::from_str(&address).map_err(|_| error::AuthError::AddressInvalid)?;
-        let uuid = super::uuid::uuid(req, address)?;
+        let uuid = super::uuid::uuid(&data, headers, address)?;
 
         // map token bytes
         let token_bytes = match hex::decode(token) {

@@ -44,7 +44,7 @@ pub type Share = Data<Arc<Mutex<Shared>>>;
 /// Block Mutex
 pub fn block<'b>(share: &'b Share) -> MutexGuard<'b, Shared> {
     loop {
-        if let Ok(share) = share.lock() {
+        if let Ok(share) = share.try_lock() {
             return share;
         } else {
             thread::sleep(Duration::from_secs(1));
