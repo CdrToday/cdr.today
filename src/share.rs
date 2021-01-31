@@ -42,7 +42,7 @@ impl Shared {
 pub type Share = Data<Arc<Mutex<Shared>>>;
 
 /// Block Mutex
-pub fn block<'b>(share: &'b Share) -> MutexGuard<'b, Shared> {
+pub fn block(share: &Share) -> MutexGuard<'_, Shared> {
     loop {
         if let Ok(share) = share.try_lock() {
             return share;

@@ -18,7 +18,7 @@ impl Display for Address {
 
 impl Address {
     /// From base58 string
-    pub fn from_str(b58: &str) -> Result<Self> {
+    pub fn from_base58(b58: &str) -> Result<Self> {
         let bytes = bs58::decode(b58).into_vec()?;
 
         if bytes.len() != 32 {

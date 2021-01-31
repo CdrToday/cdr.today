@@ -21,17 +21,18 @@ use uuid::Uuid;
 pub fn token<'t>(
     data: &MutexGuard<'t, Shared>,
     headers: &HeaderMap,
-    address: &String,
+    address: &str,
 ) -> Result<(), Error> {
     if let Some(token) = headers.get(header::TOKEN) {
-        let verifier = Address::from_str(&address).map_err(|_| error::AuthError::AddressInvalid)?;
+        let verifier =
+            Address::from_base58(&address).map_err(|_| error::AuthError::AddressInvalid)?;
         let uuid = super::uuid::uuid(&data, headers, address)?;
 
         // map token bytes
         let token_bytes = match hex::decode(token) {
             Err(_) => {
                 set_uuid(&data, &address, &uuid).unwrap_or_default();
-                return Err(error::AuthError::TokenInvalid { uuid: uuid.clone() }.into());
+                return Err(error::AuthError::TokenInvalid { uuid }.into());
             }
             Ok(b) => b,
         };
@@ -40,7 +41,7 @@ pub fn token<'t>(
         if match verifier.verify(uuid.as_bytes(), &token_bytes) {
             Err(_) => {
                 set_uuid(&data, &address, &uuid).unwrap_or_default();
-                return Err(error::AuthError::UuidInvalid { uuid: uuid.clone() }.into());
+                return Err(error::AuthError::UuidInvalid { uuid }.into());
             }
             Ok(r) => r,
         } {

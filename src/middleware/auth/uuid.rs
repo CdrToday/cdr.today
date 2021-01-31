@@ -17,7 +17,7 @@ use uuid::Uuid;
 pub fn uuid<'u>(
     data: &MutexGuard<'u, Shared>,
     headers: &HeaderMap,
-    address: &String,
+    address: &str,
 ) -> Result<String, Error> {
     if let Some(uuid) = headers.get(header::UUID) {
         let new_uuid = Uuid::new_v4().to_string();

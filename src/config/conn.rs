@@ -25,8 +25,14 @@ pub struct Connection {
 
 impl Default for Connection {
     fn default() -> Connection {
+        Connection::new("postgresql".to_string())
+    }
+}
+
+impl Connection {
+    pub fn new(protocol: String) -> Self {
         Connection {
-            name: "postgresql".to_string(),
+            name: protocol,
             db: None,
             hostname: None,
             port: None,
@@ -35,14 +41,6 @@ impl Default for Connection {
             r#override: None,
             conn: 3,
         }
-    }
-}
-
-impl Connection {
-    pub fn new(protocol: String) -> Self {
-        let mut conn = Self::default();
-        conn.name = protocol;
-        conn
     }
 
     /// Encode url

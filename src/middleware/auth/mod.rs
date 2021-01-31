@@ -62,6 +62,7 @@ pub struct AuthMiddleware<S> {
     service: S,
 }
 
+#[allow(clippy::type_complexity)]
 impl<S, B> Service for AuthMiddleware<S>
 where
     S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
