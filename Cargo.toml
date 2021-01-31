@@ -8,7 +8,7 @@ edition = "2018"
 # network
 juniper = "0.15.2"
 juniper_actix = "0.2.2"
-actix-web = "3.3.2"
+actix-web = "3.3"
 futures = "0.3.12"
 
 # database
@@ -18,11 +18,11 @@ diesel = { version = "1.4.5", features = [ "postgres", "r2d2" ] }
 
 # crypto
 uuid = { version = "0.8.2", features = ["v4"]}
-openssl = "0.10.32"
+ed25519-dalek = "1.0.1"
 
 # actix family
+actix-rt = "1.1.1"
 actix-cors = "0.5.4"
-actix-web-httpauth = "0.5.0"
 actix-service = "1.0.6"
 
 # dev

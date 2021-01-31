@@ -10,7 +10,7 @@ pub type TableContext = (&'static str, Vec<&'static str>);
 pub trait Schema {
     /// For example:
     ///
-    /// ```rust
+    /// ```text
     /// (
     ///   "account", [
     ///      "name TEXT NOT NULL",

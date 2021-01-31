@@ -15,12 +15,14 @@ mod call;
 mod error;
 mod header;
 mod token;
+mod util;
 mod uuid;
 
 /// cdr.today auth
 ///
 /// A complete auth flow is like
 ///
+/// ```text
 ///          empty header
 /// clinet -----------------> server
 ///
@@ -32,6 +34,7 @@ mod uuid;
 ///
 ///          verify signature, token saved in server
 /// server ---------------------------------------------> client
+/// ```
 pub struct Auth;
 
 // Middleware factory is `Transform` trait from actix-service crate
@@ -59,6 +62,7 @@ pub struct AuthMiddleware<S> {
     service: S,
 }
 
+#[allow(clippy::type_complexity)]
 impl<S, B> Service for AuthMiddleware<S>
 where
     S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error>,

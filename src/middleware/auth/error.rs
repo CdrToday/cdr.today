@@ -6,7 +6,7 @@ use derive_more::{Display, Error};
 static UUID_NOT_FOUND: &str =
     "Uuid not found in header CDR-TODAY-UUID, sign the returned UUID with ED25519 secret key.";
 static UUID_INVALID: &str =
-    "Uuid invalid in header CDR-TODAY-UUID, check your token in CDR-TODAY-TOKEN";
+    "Verify Uuid in header CDR-TODAY-UUID failed, sign the returned UUID with ED25519 secret key.";
 static TOKEN_NOT_FOUND: &str =
     "Token not found in header CDR-TODAY-TOKEN, sign the returned UUID with ED25519 secret key.";
 static TOKEN_INVALID: &str =

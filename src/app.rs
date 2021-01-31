@@ -23,12 +23,12 @@ pub async fn serve(config: Config) -> Result<()> {
                 Cors::default()
                     .allowed_methods(vec!["POST", "GET"])
                     .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
-                    .send_wildcard()
+                    .allow_any_origin()
                     .supports_credentials()
                     .max_age(3600),
             )
             .service(
-                web::resource("/graphgl")
+                web::resource("/graphql")
                     .route(web::post().to(graphql::graphql))
                     .route(web::get().to(graphql::graphql)),
             )
